@@ -1005,19 +1005,33 @@
 			border-radius: 10px;
 		}
 
+		/* Pre-sell buttons styling, similar to other buttons */
 		#preSellSection button {
-			margin: 10px;
-			padding: 10px 20px;
-			font-size: 1em;
-			border: none;
-			border-radius: 5px;
+			display: inline-block;
+			width: auto;
+			height: 2.75rem;
+			line-height: 2.75rem;
+			padding: 0 1.375rem;
+			vertical-align: middle;
+			font-family: 'Luckiest Guy', cursive;
+			font-size: 1.875em;
+			font-weight: 400;
+			border-radius: 0.75rem;
+			direction: var(--site-language-direction);
+			overflow: hidden;
+			text-overflow: ellipsis;
+			transition: transform 0.25s ease, color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
 			cursor: pointer;
-			background-color: #008CBA;
-			color: white;
+			text-align: center;
+			text-decoration: none;
+			color: #FAFF00; /* Text color */
+			background-color: #000000; /* Background color */
+			border: none; /* No border */
 		}
 
 		#preSellSection button:hover {
-			background-color: #007B9A;
+			transform: scale(1.1125);
+			background-color: #333333; /* Slightly darker background on hover */
 		}
 
 	
