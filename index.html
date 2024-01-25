@@ -1674,10 +1674,11 @@
  <!-- Phantom Wallet Connection Script -->
         <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest"></script>
         <script>
+            // Ensure this script is at the end of the body to execute after page load
 			document.addEventListener('DOMContentLoaded', (event) => {
 				const connectWalletButton = document.getElementById('connectWalletButton');
 				const walletAddressSpan = document.getElementById('walletAddress');
-				const preSellSection = document.getElementById('preSellSection');
+				const preSellSection = document.getElementById('preSellSection'); // Get the preSellSection element
 
 				let walletConnected = false;
 
@@ -1687,6 +1688,7 @@
 						if (provider.isPhantom) {
 							try {
 								if (!walletConnected) {
+									// Connect wallet
 									const response = await provider.connect();
 									console.log('Connected with Public Key:', response.publicKey.toString());
 									connectWalletButton.textContent = 'Disconnect Wallet';
@@ -1695,8 +1697,13 @@
 									walletAddressSpan.style.display = 'block';
 									walletAddressSpan.innerText = `Wallet: ${response.publicKey.toString()}`;
 									walletAddressSpan.classList.add('visible');
+
+									// Show the Pre-sell section
 									preSellSection.style.display = 'block';
+									preSellSection.scrollIntoView({ behavior: 'smooth' });
+
 								} else {
+									// Disconnect wallet
 									await provider.disconnect();
 									connectWalletButton.textContent = 'Connect Phantom Wallet';
 									connectWalletButton.classList.remove('connected');
@@ -1704,10 +1711,13 @@
 									walletAddressSpan.style.display = 'none';
 									walletAddressSpan.innerText = '';
 									walletAddressSpan.classList.remove('visible');
+
+									// Hide the Pre-sell section
 									preSellSection.style.display = 'none';
 								}
 							} catch (err) {
-								console.error('Error connecting to wallet:', err);
+								// Handle errors
+								console.error(err);
 							}
 						} else {
 							alert('Phantom wallet not found! Please install it.');
