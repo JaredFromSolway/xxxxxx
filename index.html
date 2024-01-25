@@ -1568,10 +1568,13 @@
         document.body.addEventListener('click', playAudio);
     </script>
 		
-    <!-- Button for connecting Phantom Wallet -->
+ <!-- Button for connecting Phantom Wallet -->
+    <button id="connectWalletButton">Connect Phantom Wallet</button>
+
+    <!-- JavaScript for Wallet Connection -->
     <script>
-    const connectWalletButton = document.getElementById('connectWalletButton');
-    let provider = null;
+        const connectWalletButton = document.getElementById('connectWalletButton');
+        let provider = null;
 
     const checkIfWalletIsConnected = async () => {
         if ('solana' in window) {
