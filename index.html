@@ -1005,6 +1005,14 @@
 			border-radius: 10px;
 		}
 
+			#preSellTitle, #selectAmountText {
+			color: #000000;
+			font-family: 'Luckiest Guy', cursive;
+			font-size: 1.375em;
+			line-height: 1.5;
+			font-weight: 400;
+		}
+	
 		/* Pre-sell buttons styling, similar to other buttons */
 
 		#preSellSection button {
@@ -1079,8 +1087,8 @@
         </div>
 		<!-- Pre-sell Section -->
 		<div id="preSellSection" style="display: none;">
-			<h2>Pre-sell</h2>
-			<p>Select the amount:</p>
+			<h2 id="preSellTitle">Pre-sell</h2>
+			<p id="selectAmountText">Select the amount:</p>
 			<button onclick="preSell('0.25')">0.25 SOL</button>
 			<button onclick="preSell('0.5')">0.5 SOL</button>
 			<button onclick="preSell('1.0')">1.0 SOL</button>
