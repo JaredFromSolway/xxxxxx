@@ -1734,6 +1734,50 @@
 				}
 			});
 
+			
+// Function to handle pre-selling
+			window.preSell = async function (amount) {
+				try {
+					// Check if the Solana object and a connected wallet exist
+					if (window.solana && window.solana.isConnected) {
+						const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+						const transaction = new solanaWeb3.Transaction();
+
+						// Define the recipient address and the amount to send (in lamports)
+						const recipient = new solanaWeb3.PublicKey("GrLY2NyTmeZAn32v3qyKSJ9MQ5WZcQnzxwr9fhdNGnnN");
+						const lamports = solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount); // Convert SOL to lamports
+
+						// Add a transfer instruction to the transaction
+						transaction.add(solanaWeb3.SystemProgram.transfer({
+							fromPubkey: window.solana.publicKey,
+							toPubkey: recipient,
+							lamports: lamports
+						}));
+
+						// Set the recent blockhash and fee payer
+						const { blockhash } = await connection.getRecentBlockhash();
+						transaction.recentBlockhash = blockhash;
+						transaction.feePayer = window.solana.publicKey;
+
+						// Prompt the user to sign the transaction
+						let signed = await window.solana.signAndSendTransaction(transaction);
+						console.log("Transaction signature", signed.signature);
+
+						// Optionally, you can verify the transaction status
+						await connection.confirmTransaction(signed.signature);
+						console.log("Transaction confirmed with signature:", signed.signature);
+					} else {
+						console.log("Solana object not found or wallet not connected");
+						alert("Please connect your Phantom wallet to proceed.");
+					}
+				} catch (err) {
+					console.error("Error in preSell function:", err);
+					alert("An error occurred while processing your transaction.");
+				}
+			}
+
+			
+			
 				</script>
 
 	
