@@ -1631,6 +1631,8 @@
                                     walletConnected = true;
                                     walletAddressSpan.style.display = 'block';
                                     walletAddressSpan.innerText = `Wallet: ${response.publicKey.toString()}`;
+									walletAddressSpan.classList.add('visible');
+
                                 } else {
                                     // Disconnect wallet
                                     await provider.disconnect();
@@ -1639,6 +1641,8 @@
                                     walletConnected = false;
                                     walletAddressSpan.style.display = 'none';
                                     walletAddressSpan.innerText = '';
+									walletAddressSpan.classList.remove('visible');
+
                                 }
                             } catch (err) {
                                 // Handle errors
