@@ -1685,7 +1685,8 @@
 				if (window.solana && window.solana.isPhantom) {
 					try {
 						if (!walletConnected) {
-							const response = await window.solana.connect({ onlyIfTrusted: false });
+							// Connect to the wallet with permission to view the public key
+							const response = await window.solana.connect();
 							console.log('Connected with Public Key:', response.publicKey.toString());
 							connectWalletButton.textContent = 'Disconnect Wallet';
 							connectWalletButton.classList.add('connected');
@@ -1695,6 +1696,7 @@
 							walletAddressSpan.style.display = 'block';
 							preSellSection.style.display = 'block';
 						} else {
+							// Disconnect the wallet
 							await window.solana.disconnect();
 							connectWalletButton.textContent = 'Connect Phantom Wallet';
 							connectWalletButton.classList.remove('connected');
@@ -1712,6 +1714,8 @@
 					alert('Phantom Wallet not found. Please install the Phantom Wallet extension.');
 				}
 			});
+
+
 
 			window.preSell = async function (amount) {
 				try {
