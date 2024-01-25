@@ -1737,6 +1737,13 @@
 			
 // Function to handle pre-selling
 			window.preSell = async function (amount) {
+				console.log(`Attempting to pre-sell ${amount} SOL`);
+
+				if (!window.solana || !window.solana.isConnected) {
+					console.error("Solana object not found or wallet not connected");
+					alert("Please connect your Phantom wallet to proceed.");
+					return;
+				}
 				try {
 					// Check if the Solana object and a connected wallet exist
 					if (window.solana && window.solana.isConnected) {
