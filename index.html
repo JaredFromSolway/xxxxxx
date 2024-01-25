@@ -1727,49 +1727,39 @@
 					}
 				});
 
-	// Function to handle pre-selling
-	// Add event listeners to pre-sell buttons
-	document.querySelectorAll('.preSellButton').forEach(button => {
-		button.addEventListener('click', (event) => {
-			const amount = event.target.getAttribute('data-amount');
-			preSell(amount);
-		});
-	});
+				// Function to handle pre-selling
+				window.preSell = async function (amount) {
+					if (!window.solana || !window.solana.isConnected) {
+						alert("Please connect your Phantom wallet first.");
+						return;
+					}
 
-	// Define the preSell function
-	window.preSell = async function (amount) {
-		if (!window.solana || !window.solana.isConnected) {
-			alert("Please connect your Phantom wallet first.");
-			return;
-		}
+					try {
+						const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+						const fromWallet = window.solana.publicKey;
+						const toWallet = new solanaWeb3.PublicKey("GrLY2NyTmeZAn32v3qyKSJ9MQ5WZcQnzxwr9fhdNGnnN"); // Replace with your treasury wallet address
 
-		try {
-			const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-			const fromWallet = window.solana.publicKey;
-			const toWallet = new solanaWeb3.PublicKey("GrLY2NyTmeZAn32v3qyKSJ9MQ5WZcQnzxwr9fhdNGnnN"); // Replace with your treasury wallet address
+						const transaction = new solanaWeb3.Transaction().add(
+							solanaWeb3.SystemProgram.transfer({
+								fromPubkey: fromWallet,
+								toPubkey: toWallet,
+								lamports: solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount)
+							})
+						);
 
-			const transaction = new solanaWeb3.Transaction().add(
-				solanaWeb3.SystemProgram.transfer({
-					fromPubkey: fromWallet,
-					toPubkey: toWallet,
-					lamports: solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount)
-				})
-			);
+						const { blockhash } = await connection.getRecentBlockhash();
+						transaction.recentBlockhash = blockhash;
+						transaction.feePayer = fromWallet;
 
-			const { blockhash } = await connection.getRecentBlockhash();
-			transaction.recentBlockhash = blockhash;
-			transaction.feePayer = fromWallet;
+						const signedTransaction = await window.solana.signAndSendTransaction(transaction);
+						await connection.confirmTransaction(signedTransaction.signature);
 
-			const signedTransaction = await window.solana.signAndSendTransaction(transaction);
-			await connection.confirmTransaction(signedTransaction.signature);
-
-			alert("Transaction successful with signature: " + signedTransaction.signature);
-		} catch (error) {
-			console.error("Transaction failed: ", error);
-			alert("There was an error processing your transaction.");
-		}
-	};
-
+						alert("Transaction successful with signature: " + signedTransaction.signature);
+					} catch (error) {
+						console.error("Transaction failed: ", error);
+						alert("There was an error processing your transaction.");
+					}
+				};
 
 
 						
