@@ -1569,35 +1569,68 @@
     </script>
 		
     <!-- Button for connecting Phantom Wallet -->
-    <button id="connectWalletButton">
-        Connect Phantom Wallet
-    </button>
-
-    <!-- JavaScript to handle wallet connection and change button style on connection -->
     <script>
-        const connectWalletButton = document.getElementById('connectWalletButton');
+    const connectWalletButton = document.getElementById('connectWalletButton');
+    let provider = null;
 
-        connectWalletButton.addEventListener('click', async () => {
-            if ('solana' in window) {
-                const provider = window.solana;
-                if (provider.isPhantom) {
-                    try {
-                        const response = await provider.connect();
-                        console.log('Connected with Public Key:', response.publicKey.toString());
-                        connectWalletButton.classList.add('connected');
-                        connectWalletButton.textContent = 'Wallet Connected';
-                    } catch (err) {
-                        // Handle error, user may have rejected the request
-                        console.error(err);
-                    }
-                } else {
-                    alert('Phantom wallet not found! Please install it.');
+    const checkIfWalletIsConnected = async () => {
+        if ('solana' in window) {
+            provider = window.solana;
+            if (provider.isPhantom) {
+                try {
+                    const response = await provider.connect({ onlyIfTrusted: true });
+                    console.log('Connected with Public Key:', response.publicKey.toString());
+                    updateButtonToDisconnect();
+                } catch (err) {
+                    // Handle error, such as when the user has not yet connected their wallet
+                    console.error(err);
                 }
             } else {
-                alert('Solana object not found! You need a Solana wallet extension.');
+                alert('Phantom wallet not found! Please install it.');
             }
-        });
-    </script>
+        } else {
+            alert('Solana object not found! You need a Solana wallet extension.');
+        }
+    };
+
+    const connectWallet = async () => {
+        if (provider) {
+            try {
+                const response = await provider.connect();
+                console.log('Connected with Public Key:', response.publicKey.toString());
+                updateButtonToDisconnect();
+            } catch (err) {
+                // Handle error, user may have rejected the request
+                console.error(err);
+            }
+        }
+    };
+
+    const disconnectWallet = async () => {
+        if (provider) {
+            await provider.disconnect();
+            updateButtonToConnect();
+        }
+    };
+
+    const updateButtonToConnect = () => {
+        connectWalletButton.textContent = 'Connect Phantom Wallet';
+        connectWalletButton.classList.remove('connected');
+        connectWalletButton.onclick = connectWallet;
+    };
+
+    const updateButtonToDisconnect = () => {
+        connectWalletButton.textContent = 'Disconnect Wallet';
+        connectWalletButton.classList.add('connected');
+        connectWalletButton.onclick = disconnectWallet;
+    };
+
+    connectWalletButton.addEventListener('click', connectWallet);
+
+    // Check if the wallet is already connected when the page loads
+    window.addEventListener('load', checkIfWalletIsConnected);
+</script>
+
 		
     </body>
 </html>
