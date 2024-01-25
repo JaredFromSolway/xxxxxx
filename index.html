@@ -1098,8 +1098,9 @@
 			<h2 id="preSellTitle">Pre-sell</h2>
 			<p id="selectAmountText">Select the amount:</p>
 			<button onclick="preSell('0.25')">0.25 SOL</button>
-			<button onclick="preSell('0.5')">0.5 SOL</button>
-			<button onclick="preSell('1.0')">1.0 SOL</button>
+	<button onclick="preSell('0.5')">0.5 SOL</button>
+	<button onclick="preSell('1.0')">1.0 SOL</button>
+
 		</div>
 
         <script>
@@ -1727,55 +1728,57 @@
 					}
 				});
 
-				// Function to handle pre-selling
-				window.preSell = async function (amount) {
-					try {
-						// Check if the Solana object and a connected wallet exist
-						if (window.solana && window.solana.isConnected) {
-							const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-							const fromPubkey = window.solana.publicKey;
-							const recipient = new solanaWeb3.PublicKey("GrLY2NyTmeZAn32v3qyKSJ9MQ5WZcQnzxwr9fhdNGnnN");
+				// Function to handle pre-selling (placeholder)
+				window.preSell = function (amount) {
+					console.log(`Pre-selling ${amount} SOL...`);
+					// Implement the logic for pre-selling here
+				}
+			});
 
-							// Get user's SOL balance
-							const balance = await connection.getBalance(fromPubkey);
-							const lamportsToSend = solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount);
+			
+// Function to handle pre-selling
+			window.preSell = async function (amount) {
+				try {
+					// Check if the Solana object and a connected wallet exist
+					if (window.solana && window.solana.isConnected) {
+						const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+						const transaction = new solanaWeb3.Transaction();
 
-							// Check if balance is sufficient
-							if (balance < lamportsToSend) {
-								alert('Insufficient balance to complete the transaction.');
-								return;
-							}
+						// Define the recipient address and the amount to send (in lamports)
+						const recipient = new solanaWeb3.PublicKey("GrLY2NyTmeZAn32v3qyKSJ9MQ5WZcQnzxwr9fhdNGnnN");
+						const lamports = solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount); // Convert SOL to lamports
 
-							// Create and send the transaction
-							const transaction = new solanaWeb3.Transaction().add(
-								solanaWeb3.SystemProgram.transfer({
-									fromPubkey: fromPubkey,
-									toPubkey: recipient,
-									lamports: lamportsToSend
-								})
-							);
+						// Add a transfer instruction to the transaction
+						transaction.add(solanaWeb3.SystemProgram.transfer({
+							fromPubkey: window.solana.publicKey,
+							toPubkey: recipient,
+							lamports: lamports
+						}));
 
-							const { blockhash } = await connection.getRecentBlockhash();
-							transaction.recentBlockhash = blockhash;
-							transaction.feePayer = fromPubkey;
+						// Set the recent blockhash and fee payer
+						const { blockhash } = await connection.getRecentBlockhash();
+						transaction.recentBlockhash = blockhash;
+						transaction.feePayer = window.solana.publicKey;
 
-							let signed = await window.solana.signAndSendTransaction(transaction);
-							console.log("Transaction signature", signed.signature);
+						// Prompt the user to sign the transaction
+						let signed = await window.solana.signAndSendTransaction(transaction);
+						console.log("Transaction signature", signed.signature);
 
-							// Optionally, verify the transaction status
-							await connection.confirmTransaction(signed.signature);
-							console.log("Transaction confirmed with signature:", signed.signature);
-						} else {
-							console.log("Solana object not found or wallet not connected");
-							alert("Please connect your Phantom wallet to proceed.");
-						}
-					} catch (err) {
-						console.error("Error in preSell function:", err);
-						alert("An error occurred while processing your transaction.");
+						// Optionally, you can verify the transaction status
+						await connection.confirmTransaction(signed.signature);
+						console.log("Transaction confirmed with signature:", signed.signature);
+					} else {
+						console.log("Solana object not found or wallet not connected");
+						alert("Please connect your Phantom wallet to proceed.");
 					}
-				};
+				} catch (err) {
+					console.error("Error in preSell function:", err);
+					alert("An error occurred while processing your transaction.");
+				}
+			}
 
-						
+			
+			
 				</script>
 
 	
