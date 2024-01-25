@@ -971,6 +971,9 @@
 		
     </head>
     <body>
+		<!-- Wallet Address Display -->
+        <span id="walletAddress" style="position: fixed; top: 10px; left: 10px; color: #000; background: #fff; padding: 5px; border-radius: 5px; display: none;"></span>
+		
         <div id="wrapper">
             <div id="main">
                 <div class="inner">
@@ -1574,42 +1577,50 @@
             Connect Phantom Wallet
         </button>
 
-        <!-- Phantom Wallet Connection Script -->
-        <script>
-            const connectWalletButton = document.getElementById('connectWalletButton');
-            let walletConnected = false; // State to track wallet connection
+<!-- Phantom Wallet Connection Script -->
+		<script>
+			const connectWalletButton = document.getElementById('connectWalletButton');
+			const walletAddressSpan = document.getElementById('walletAddress');
+			let walletConnected = false;
 
-            connectWalletButton.addEventListener('click', async () => {
-                if ('solana' in window) {
-                    const provider = window.solana;
-                    if (provider.isPhantom) {
-                        try {
-                            if (!walletConnected) {
-                                // Connect wallet
-                                const response = await provider.connect();
-                                console.log('Connected with Public Key:', response.publicKey.toString());
-                                connectWalletButton.textContent = 'Disconnect Wallet';
-                                connectWalletButton.classList.add('connected');
-                                walletConnected = true;
-                            } else {
-                                // Disconnect wallet
-                                await provider.disconnect();
-                                connectWalletButton.textContent = 'Connect Phantom Wallet';
-                                connectWalletButton.classList.remove('connected');
-                                walletConnected = false;
-                            }
-                        } catch (err) {
-                            // Handle errors, such as user rejecting the connection
-                            console.error(err);
-                        }
-                    } else {
-                        alert('Phantom wallet not found! Please install it.');
-                    }
-                } else {
-                    alert('Solana object not found! You need a Solana wallet extension.');
-                }
-            });
-        </script>
+			connectWalletButton.addEventListener('click', async () => {
+				if ('solana' in window) {
+					const provider = window.solana;
+					if (provider.isPhantom) {
+						try {
+							if (!walletConnected) {
+								// Connect wallet
+								const response = await provider.connect();
+								console.log('Connected with Public Key:', response.publicKey.toString());
+								connectWalletButton.textContent = 'Disconnect Wallet';
+								connectWalletButton.classList.add('connected');
+								walletConnected = true;
+								walletAddressSpan.style.display = 'block';
+								walletAddressSpan.innerText = `Wallet: ${response.publicKey.toString()}`;
+							} else {
+								// Disconnect wallet
+								await provider.disconnect();
+								connectWalletButton.textContent = 'Connect Phantom Wallet';
+								connectWalletButton.classList.remove('connected');
+								walletConnected = false;
+								walletAddressSpan.style.display = 'none';
+								walletAddressSpan.innerText = '';
+							}
+						} catch (err) {
+							// Handle errors
+							console.error(err);
+						}
+					} else {
+						alert('Phantom wallet not found! Please install it.');
+					}
+				} else {
+					alert('Solana object not found! You need a Solana wallet extension.');
+				}
+			});
+		</script>
+
+		
+		
 		
     </body>
 </html>
