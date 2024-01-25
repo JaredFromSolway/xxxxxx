@@ -1006,33 +1006,37 @@
 		}
 
 		/* Pre-sell buttons styling, similar to other buttons */
+
 		#preSellSection button {
+			cursor: pointer;
 			display: inline-block;
 			width: auto;
 			height: 2.75rem;
 			line-height: 2.75rem;
-			padding: 0 1.375rem;
+			padding: 0 0.575rem;
 			vertical-align: middle;
 			font-family: 'Luckiest Guy', cursive;
-			font-size: 1.875em;
+			font-size: 0.875em;
 			font-weight: 400;
 			border-radius: 0.75rem;
 			direction: var(--site-language-direction);
 			overflow: hidden;
 			text-overflow: ellipsis;
 			transition: transform 0.25s ease, color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
-			cursor: pointer;
+			background-color: #808080; /* Gray color, similar to connectWalletButton */
+			color: #ffffff; /* White text */
 			text-align: center;
 			text-decoration: none;
-			color: #FAFF00; /* Text color */
-			background-color: #000000; /* Background color */
-			border: none; /* No border */
+			white-space: nowrap;
+			opacity: 0.5; /* Similar transparency as connectWalletButton */
+			margin: 10px; /* Spacing around buttons */
 		}
 
-		#preSellSection button:hover {
-			transform: scale(1.1125);
-			background-color: #333333; /* Slightly darker background on hover */
-		}
+#preSellSection button:hover {
+    background-color: #666666; /* Darker shade of gray on hover */
+    opacity: 0.7; /* Slightly less transparent on hover */
+}
+
 
 	
     </style>
