@@ -997,6 +997,28 @@
 			transform: translateY(0);
 		}
 
+		#preSellSection {
+			text-align: center;
+			padding: 20px;
+			margin-top: 20px;
+			background-color: #f0f0f0;
+			border-radius: 10px;
+		}
+
+		#preSellSection button {
+			margin: 10px;
+			padding: 10px 20px;
+			font-size: 1em;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			background-color: #008CBA;
+			color: white;
+		}
+
+		#preSellSection button:hover {
+			background-color: #007B9A;
+		}
 
 	
     </style>
@@ -1041,6 +1063,15 @@
                 </div>
             </div>
         </div>
+		<!-- Pre-sell Section -->
+		<div id="preSellSection" style="display: none;">
+			<h2>Pre-sell</h2>
+			<p>Select the amount:</p>
+			<button onclick="preSell('0.25')">0.25 SOL</button>
+			<button onclick="preSell('0.5')">0.5 SOL</button>
+			<button onclick="preSell('1.0')">1.0 SOL</button>
+		</div>
+
         <script>
             (function() {
                 var on = addEventListener
@@ -1607,58 +1638,72 @@
         document.body.addEventListener('click', playAudio);
     </script>
 		
-    <!-- Button for connecting Phantom Wallet -->
+<!-- Button for connecting Phantom Wallet -->
 			<button id="connectWalletButton">Connect Phantom Wallet</button>
 
  <!-- Phantom Wallet Connection Script -->
         <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest"></script>
         <script>
             // Ensure this script is at the end of the body to execute after page load
-            document.addEventListener('DOMContentLoaded', (event) => {
-                const connectWalletButton = document.getElementById('connectWalletButton');
-                const walletAddressSpan = document.getElementById('walletAddress');
-                let walletConnected = false;
+			document.addEventListener('DOMContentLoaded', (event) => {
+				const connectWalletButton = document.getElementById('connectWalletButton');
+				const walletAddressSpan = document.getElementById('walletAddress');
+				const preSellSection = document.getElementById('preSellSection'); // Pre-sell section
+				let walletConnected = false;
 
-                connectWalletButton.addEventListener('click', async () => {
-                    if ('solana' in window) {
-                        const provider = window.solana;
-                        if (provider.isPhantom) {
-                            try {
-                                if (!walletConnected) {
-                                    // Connect wallet
-                                    const response = await provider.connect();
-                                    console.log('Connected with Public Key:', response.publicKey.toString());
-                                    connectWalletButton.textContent = 'Disconnect Wallet';
-                                    connectWalletButton.classList.add('connected');
-                                    walletConnected = true;
-                                    walletAddressSpan.style.display = 'block';
-                                    walletAddressSpan.innerText = `Wallet: ${response.publicKey.toString()}`;
-									walletAddressSpan.classList.add('visible');
 
-                                } else {
-                                    // Disconnect wallet
-                                    await provider.disconnect();
-                                    connectWalletButton.textContent = 'Connect Phantom Wallet';
-                                    connectWalletButton.classList.remove('connected');
-                                    walletConnected = false;
-                                    walletAddressSpan.style.display = 'none';
-                                    walletAddressSpan.innerText = '';
-									walletAddressSpan.classList.remove('visible');
+                        connectWalletButton.addEventListener('click', async () => {
+							if ('solana' in window) {
+								const provider = window.solana;
+								if (provider.isPhantom) {
+									try {
+										if (!walletConnected) {
+											// Connect wallet
+											const response = await provider.connect();
+											console.log('Connected with Public Key:', response.publicKey.toString());
+											connectWalletButton.textContent = 'Disconnect Wallet';
+											connectWalletButton.classList.add('connected');
+											walletConnected = true;
+											walletAddressSpan.style.display = 'block';
+											walletAddressSpan.innerText = `Wallet: ${response.publicKey.toString()}`;
+											walletAddressSpan.classList.add('visible');
 
-                                }
-                            } catch (err) {
-                                // Handle errors
-                                console.error(err);
-                            }
-                        } else {
-                            alert('Phantom wallet not found! Please install it.');
-                        }
-                    } else {
-                        alert('Solana object not found! You need a Solana wallet extension.');
-                    }
-                });
-            });
-        </script>
+											// Show the Pre-sell section
+											preSellSection.style.display = 'block';
+											preSellSection.scrollIntoView({ behavior: 'smooth' });
+
+										} else {
+											// Disconnect wallet
+											await provider.disconnect();
+											connectWalletButton.textContent = 'Connect Phantom Wallet';
+											connectWalletButton.classList.remove('connected');
+											walletConnected = false;
+											walletAddressSpan.style.display = 'none';
+											walletAddressSpan.innerText = '';
+											walletAddressSpan.classList.remove('visible');
+
+											// Hide the Pre-sell section
+											preSellSection.style.display = 'none';
+										}
+									} catch (err) {
+										// Handle errors
+										console.error(err);
+									}
+								} else {
+									alert('Phantom wallet not found! Please install it.');
+								}
+							} else {
+								alert('Solana object not found! You need a Solana wallet extension.');
+							}
+						});
+
+						// Function to handle pre-selling (placeholder)
+						window.preSell = function (amount) {
+							console.log(`Pre-selling ${amount} SOL...`);
+							// Implement the logic for pre-selling here
+						}
+					});
+				</script>
 
 	
 		
