@@ -1097,7 +1097,7 @@
 		<div id="preSellSection" style="display: none;">
 			<h2 id="preSellTitle">Pre-sell</h2>
 			<p id="selectAmountText">Select the amount:</p>
-			<button onclick="preSell('0.015')">0.015 SOL</button>
+			<button onclick="preSell('0.025')">0.025 SOL</button>
 			<button onclick="preSell('0.5')">0.5 SOL</button>
 			<button onclick="preSell('1.0')">1.0 SOL</button>
 
@@ -1718,6 +1718,7 @@
 					alert("Please connect your Phantom wallet first.");
 					return;
 				}
+
 				try {
 					const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
 					const fromPubkey = window.solana.publicKey;
@@ -1746,13 +1747,14 @@
 					let signed = await window.solana.signAndSendTransaction(transaction);
 					console.log("Transaction signature", signed.signature);
 
-					await connection.confirmTransaction(signed.signature);
-					console.log("Transaction confirmed with signature:", signed.signature);
+					const confirmation = await connection.confirmTransaction(signed.signature, 'processed');
+					console.log("Transaction confirmed with signature:", signed.signature, confirmation);
 				} catch (err) {
 					console.error("Error in preSell function:", err);
-					alert("An error occurred while processing your transaction.");
+					alert("An error occurred while processing your transaction. Error: " + err.message);
 				}
 			};
+
 		});
 	</script>
 
