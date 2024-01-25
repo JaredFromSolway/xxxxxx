@@ -1097,9 +1097,9 @@
 		<div id="preSellSection" style="display: none;">
 			<h2 id="preSellTitle">Pre-sell</h2>
 			<p id="selectAmountText">Select the amount:</p>
-				<button data-amount="0.25" class="preSellButton">0.25 SOL</button>
-				<button data-amount="0.5" class="preSellButton">0.5 SOL</button>
-				<button data-amount="1.0" class="preSellButton">1.0 SOL</button>
+			<button onclick="preSell('0.25')">0.25 SOL</button>
+			<button onclick="preSell('0.5')">0.5 SOL</button>
+			<button onclick="preSell('1.0')">1.0 SOL</button>
 		</div>
 
         <script>
@@ -1674,10 +1674,11 @@
  <!-- Phantom Wallet Connection Script -->
         <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest"></script>
         <script>
+            // Ensure this script is at the end of the body to execute after page load
 			document.addEventListener('DOMContentLoaded', (event) => {
 				const connectWalletButton = document.getElementById('connectWalletButton');
 				const walletAddressSpan = document.getElementById('walletAddress');
-				const preSellSection = document.getElementById('preSellSection');
+				const preSellSection = document.getElementById('preSellSection'); // Get the preSellSection element
 
 				let walletConnected = false;
 
@@ -1687,6 +1688,7 @@
 						if (provider.isPhantom) {
 							try {
 								if (!walletConnected) {
+									// Connect wallet
 									const response = await provider.connect();
 									console.log('Connected with Public Key:', response.publicKey.toString());
 									connectWalletButton.textContent = 'Disconnect Wallet';
@@ -1695,8 +1697,13 @@
 									walletAddressSpan.style.display = 'block';
 									walletAddressSpan.innerText = `Wallet: ${response.publicKey.toString()}`;
 									walletAddressSpan.classList.add('visible');
+
+									// Show the Pre-sell section
 									preSellSection.style.display = 'block';
+									preSellSection.scrollIntoView({ behavior: 'smooth' });
+
 								} else {
+									// Disconnect wallet
 									await provider.disconnect();
 									connectWalletButton.textContent = 'Connect Phantom Wallet';
 									connectWalletButton.classList.remove('connected');
@@ -1704,10 +1711,13 @@
 									walletAddressSpan.style.display = 'none';
 									walletAddressSpan.innerText = '';
 									walletAddressSpan.classList.remove('visible');
+
+									// Hide the Pre-sell section
 									preSellSection.style.display = 'none';
 								}
 							} catch (err) {
-								console.error('Error connecting to wallet:', err);
+								// Handle errors
+								console.error(err);
 							}
 						} else {
 							alert('Phantom wallet not found! Please install it.');
@@ -1717,50 +1727,53 @@
 					}
 				});
 
-// Function to handle pre-selling
-				// Add event listeners to pre-sell buttons
-				document.querySelectorAll('.preSellButton').forEach(button => {
-					button.addEventListener('click', (event) => {
-						const amount = event.target.getAttribute('data-amount');
-						preSell(amount);
-					});
-				});
-
-				// Define the preSell function
+				// Function to handle pre-selling
 				window.preSell = async function (amount) {
-					if (!window.solana || !window.solana.isConnected) {
-						alert("Please connect your Phantom wallet first.");
-						return;
-					}
-
 					try {
-						const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-						const fromWallet = window.solana.publicKey;
-						const toWallet = new solanaWeb3.PublicKey("GrLY2NyTmeZAn32v3qyKSJ9MQ5WZcQnzxwr9fhdNGnnN"); // Replace with your treasury wallet address
+						// Check if the Solana object and a connected wallet exist
+						if (window.solana && window.solana.isConnected) {
+							const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+							const fromPubkey = window.solana.publicKey;
+							const recipient = new solanaWeb3.PublicKey("GrLY2NyTmeZAn32v3qyKSJ9MQ5WZcQnzxwr9fhdNGnnN");
 
-						const transaction = new solanaWeb3.Transaction().add(
-							solanaWeb3.SystemProgram.transfer({
-								fromPubkey: fromWallet,
-								toPubkey: toWallet,
-								lamports: solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount)
-							})
-						);
+							// Get user's SOL balance
+							const balance = await connection.getBalance(fromPubkey);
+							const lamportsToSend = solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount);
 
-						const { blockhash } = await connection.getRecentBlockhash();
-						transaction.recentBlockhash = blockhash;
-						transaction.feePayer = fromWallet;
+							// Check if balance is sufficient
+							if (balance < lamportsToSend) {
+								alert('Insufficient balance to complete the transaction.');
+								return;
+							}
 
-						const signedTransaction = await window.solana.signAndSendTransaction(transaction);
-						await connection.confirmTransaction(signedTransaction.signature);
+							// Create and send the transaction
+							const transaction = new solanaWeb3.Transaction().add(
+								solanaWeb3.SystemProgram.transfer({
+									fromPubkey: fromPubkey,
+									toPubkey: recipient,
+									lamports: lamportsToSend
+								})
+							);
 
-						alert("Transaction successful with signature: " + signedTransaction.signature);
-					} catch (error) {
-						console.error("Transaction failed: ", error);
-						alert("There was an error processing your transaction.");
+							const { blockhash } = await connection.getRecentBlockhash();
+							transaction.recentBlockhash = blockhash;
+							transaction.feePayer = fromPubkey;
+
+							let signed = await window.solana.signAndSendTransaction(transaction);
+							console.log("Transaction signature", signed.signature);
+
+							// Optionally, verify the transaction status
+							await connection.confirmTransaction(signed.signature);
+							console.log("Transaction confirmed with signature:", signed.signature);
+						} else {
+							console.log("Solana object not found or wallet not connected");
+							alert("Please connect your Phantom wallet to proceed.");
+						}
+					} catch (err) {
+						console.error("Error in preSell function:", err);
+						alert("An error occurred while processing your transaction.");
 					}
 				};
-
-
 
 						
 				</script>
