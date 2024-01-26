@@ -1105,6 +1105,39 @@
 		</div>
 
         <script>
+			
+			// Function to initialize your application
+			function initializeApp() {
+				// Your existing code that depends on Solana Web3.js
+				// For example, setting up event listeners for your buttons
+				const connectWalletButton = document.getElementById('connectWalletButton');
+				const walletAddressSpan = document.getElementById('walletAddress');
+				const preSellSection = document.getElementById('preSellSection');
+				// ... rest of your code
+			}
+
+			// Function to check if Solana Web3.js is loaded
+			function isSolanaWeb3Loaded() {
+				return typeof window.solana !== 'undefined' && window.solana.isPhantom;
+			}
+
+			// Event listener for DOMContentLoaded
+			document.addEventListener('DOMContentLoaded', (event) => {
+				// Check if Solana Web3.js is already loaded
+				if (isSolanaWeb3Loaded()) {
+					initializeApp();
+				} else {
+					// Wait for the Solana Web3.js to load
+					const checkSolanaInterval = setInterval(() => {
+						if (isSolanaWeb3Loaded()) {
+							clearInterval(checkSolanaInterval);
+							initializeApp();
+						}
+					}, 100); // Check every 100 milliseconds
+				}
+			});
+
+			
             (function() {
                 var on = addEventListener
                   , off = removeEventListener
