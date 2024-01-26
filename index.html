@@ -1102,9 +1102,10 @@
 		<div id="preSellSection" style="display: none;">
 			<h2 id="preSellTitle">Pre-sell</h2>
 			<p id="selectAmountText">Select the amount:</p>
-			<button onclick="preSell('0.015')">0.015 SOL</button>
-			<button onclick="preSell('0.5')">0.5 SOL</button>
-			<button onclick="preSell('1.0')">1.0 SOL</button>
+<button onclick="preSell(this.innerText)">0.015 SOL</button>
+<button onclick="preSell(this.innerText)">0.5 SOL</button>
+<button onclick="preSell(this.innerText)">1.0 SOL</button>
+
 
 		</div>
 
@@ -1757,51 +1758,49 @@
 
 
 
-			window.preSell = async function (amount) {
-                if (typeof solanaWeb3 === 'undefined') {
-                    alert('Solana Web3.js library is not loaded');
-                    return;
-                }
-				try {
-					// Check if the Solana object and a connected wallet exist
-					if (window.solana && window.solana.isConnected) {
-						const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-						const fromWallet = window.solana.publicKey;
-						const toWallet = new solanaWeb3.PublicKey("GrLY2NyTmeZAn32v3qyKSJ9MQ5WZcQnzxwr9fhdNGnnN");
-
-						// Convert the SOL amount to lamports
-						const lamports = solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount);
-
-						// Create a transaction
-						const transaction = new solanaWeb3.Transaction().add(
-							solanaWeb3.SystemProgram.transfer({
-								fromPubkey: fromWallet,
-								toPubkey: toWallet,
-								lamports
-							})
-						);
-
-						// Fetch the recent blockhash
-						const { blockhash } = await connection.getRecentBlockhash();
-						transaction.recentBlockhash = blockhash;
-						transaction.feePayer = fromWallet;
-
-						// Request user's signature and send the transaction
-						let signed = await window.solana.signAndSendTransaction(transaction);
-						console.log("Transaction signature", signed.signature);
-
-						// Confirm the transaction
-						await connection.confirmTransaction(signed.signature, 'finalized');
-						console.log("Transaction confirmed with signature:", signed.signature);
-						alert("Transaction successful!");
-					} else {
-						alert("Solana object not found or wallet not connected");
-					}
-				} catch (err) {
-					console.error("Error in preSell function:", err);
-					alert("An error occurred while processing your transaction.");
-				}
-			};
+		window.preSell = async function(buttonText) {
+		    const amount = parseFloat(buttonText.split(" ")[0]);
+		    if (typeof solanaWeb3 === 'undefined') {
+		        alert('Solana Web3.js library is not loaded');
+		        return;
+		    }
+		    try {
+		        if (window.solana && window.solana.isConnected) {
+		            const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+		            const fromWallet = window.solana.publicKey;
+		            const toWallet = new solanaWeb3.PublicKey("Your_Wallet_Address_Here");
+		
+		            const lamports = solanaWeb3.LAMPORTS_PER_SOL * parseFloat(amount);
+		            const walletBalance = await connection.getBalance(fromWallet);
+		
+		            if (walletBalance < lamports) {
+		                alert("Insufficient funds for the transaction.");
+		                return;
+		            }
+		
+		            const transaction = new solanaWeb3.Transaction().add(
+		                solanaWeb3.SystemProgram.transfer({
+		                    fromPubkey: fromWallet,
+		                    toPubkey: toWallet,
+		                    lamports
+		                })
+		            );
+		
+		            const { blockhash } = await connection.getRecentBlockhash();
+		            transaction.recentBlockhash = blockhash;
+		            transaction.feePayer = fromWallet;
+		
+		            let signed = await window.solana.signAndSendTransaction(transaction);
+		            await connection.confirmTransaction(signed.signature, 'finalized');
+		            alert("Transaction successful!");
+		        } else {
+		            alert("Solana object not found or wallet not connected");
+		        }
+		    } catch (err) {
+		        console.error("Error in preSell function:", err);
+		        alert("An error occurred while processing your transaction.");
+		    }
+		};
 
 
 		});
