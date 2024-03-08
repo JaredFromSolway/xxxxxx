@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minimal Solana Sender</title>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js"></script>
+    <!-- Make sure the Solana Web3.js library is correctly included -->
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.31.0"></script>
 </head>
 <body>
     <button id="connectWalletButton">Connect Phantom Wallet</button>
     <button id="sendSolButton" disabled>Send 0.01 SOL</button>
 
     <script>
+        // Now solanaWeb3 should be defined
         const connectWalletButton = document.getElementById('connectWalletButton');
         const sendSolButton = document.getElementById('sendSolButton');
 
